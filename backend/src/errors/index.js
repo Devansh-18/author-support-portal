@@ -14,7 +14,7 @@ export class AppError extends Error {
     this.statusCode = statusCode;
     this.isOperational = true;
     this.details = details;
-    Error.captureStackTrace(this, this.constructor);
+    Error.captureStackTrace(this, this.constructor); // for logging correct place in file where err is thrown
   }
 
   /**

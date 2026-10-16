@@ -14,6 +14,17 @@ dist/
 build/
 .cache/
 
+# Tests & Coverage
+tests/
+**/tests/
+test/
+**/test/
+*.test.js
+**/*.test.js
+*.spec.js
+**/*.spec.js
+coverage/
+
 # OS Files
 .DS_Store
 Thumbs.db
