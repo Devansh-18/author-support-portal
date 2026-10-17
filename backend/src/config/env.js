@@ -41,6 +41,16 @@ export function validateEnv(source = process.env) {
     missing.push('LOG_LEVEL is required. No fallback permitted.');
   }
 
+  const rawJwtSecret = source.JWT_SECRET;
+  if (!rawJwtSecret || rawJwtSecret.trim() === '') {
+    missing.push('JWT_SECRET is required. No fallback permitted.');
+  }
+
+  const rawJwtExpiresIn = source.JWT_EXPIRES_IN;
+  if (!rawJwtExpiresIn || rawJwtExpiresIn.trim() === '') {
+    missing.push('JWT_EXPIRES_IN is required. No fallback permitted.');
+  }
+
   if (missing.length > 0) {
     throw new ConfigurationError(`Environment Validation Failure:\n - ${missing.join('\n - ')}`);
   }
@@ -69,6 +79,8 @@ export function validateEnv(source = process.env) {
     nodeEnv: rawNodeEnv.trim(),
     clientOrigin: rawClientOrigin.trim(),
     mongoUri: trimmedMongoUri,
-    logLevel: trimmedLogLevel
+    logLevel: trimmedLogLevel,
+    jwtSecret: rawJwtSecret.trim(),
+    jwtExpiresIn: rawJwtExpiresIn.trim()
   };
 }

@@ -1,6 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import { healthRoutes } from './modules/health/health.routes.js';
+import { authRoutes } from './modules/auth/auth.routes.js';
+import { bookRoutes } from './modules/books/book.routes.js';
+import { ticketRoutes } from './modules/tickets/ticket.routes.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { NotFoundError } from './errors/index.js';
 
@@ -12,6 +15,7 @@ import { NotFoundError } from './errors/index.js';
  */
 export function createApp(config) {
   const app = express();
+  app.set('appConfig', config);
 
   // Middleware
   app.use(cors({
@@ -22,6 +26,9 @@ export function createApp(config) {
 
   // Module Routes
   app.use('/api', healthRoutes);
+  app.use('/api', authRoutes);
+  app.use('/api', bookRoutes);
+  app.use('/api', ticketRoutes);
 
   // 404 Handler - Passes NotFoundError to centralized errorHandler
   app.use((req, res, next) => {

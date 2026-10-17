@@ -7,7 +7,11 @@
   "exports": {
     ".": "./src/index.js",
     "./health": "./src/health/health.contract.js",
-    "./common": "./src/common/validator.js"
+    "./common": "./src/common/validator.js",
+    "./enums": "./src/enums/index.js",
+    "./auth": "./src/auth/auth.contract.js",
+    "./books": "./src/books/books.contract.js",
+    "./tickets": "./src/tickets/tickets.contract.js"
   },
   "scripts": {
     "test": "node --test tests/**/*.test.js"
