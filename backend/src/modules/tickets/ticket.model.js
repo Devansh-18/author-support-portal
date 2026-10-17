@@ -1,5 +1,10 @@
 import mongoose from 'mongoose';
-import { TICKET_STATUSES, TICKET_CATEGORIES, TICKET_PRIORITIES } from '../../constants/enums.js';
+import {
+  TICKET_STATUSES,
+  TICKET_CATEGORIES,
+  TICKET_PRIORITIES,
+  AI_STATUSES
+} from '../../constants/enums.js';
 
 const ticketSchema = new mongoose.Schema(
   {
@@ -37,7 +42,7 @@ const ticketSchema = new mongoose.Schema(
         values: Object.values(TICKET_CATEGORIES),
         message: 'Invalid ticket category: {VALUE}'
       },
-      default: TICKET_CATEGORIES.GENERAL_INQUIRY,
+      default: TICKET_CATEGORIES.NOT_APPLICABLE,
       index: true
     },
     priority: {
@@ -46,7 +51,7 @@ const ticketSchema = new mongoose.Schema(
         values: Object.values(TICKET_PRIORITIES),
         message: 'Invalid ticket priority: {VALUE}'
       },
-      default: TICKET_PRIORITIES.MEDIUM,
+      default: TICKET_PRIORITIES.NOT_APPLICABLE,
       index: true
     },
     status: {
@@ -56,6 +61,19 @@ const ticketSchema = new mongoose.Schema(
         message: 'Invalid ticket status: {VALUE}'
       },
       default: TICKET_STATUSES.OPEN,
+      index: true
+    },
+    aiDraftResponse: {
+      type: String,
+      default: null
+    },
+    aiStatus: {
+      type: String,
+      enum: {
+        values: Object.values(AI_STATUSES),
+        message: 'Invalid AI status: {VALUE}'
+      },
+      default: AI_STATUSES.PENDING,
       index: true
     },
     assignedTo: {

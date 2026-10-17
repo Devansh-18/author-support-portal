@@ -44,6 +44,7 @@ export function QueueFilterBar({ filters, onFilterChange, onReset }) {
             style={{ minWidth: '180px', padding: '6px 10px', fontSize: '13px' }}
           >
             <option value="">All Categories</option>
+            <option value="N/A">N/A (Unclassified / Processing)</option>
             <option value="Royalty & Payments">Royalty & Payments</option>
             <option value="ISBN & Metadata Issues">ISBN & Metadata Issues</option>
             <option value="Printing & Quality">Printing & Quality</option>
@@ -65,6 +66,7 @@ export function QueueFilterBar({ filters, onFilterChange, onReset }) {
             style={{ minWidth: '140px', padding: '6px 10px', fontSize: '13px' }}
           >
             <option value="">All Priorities</option>
+            <option value="N/A">N/A (Unscored / Processing)</option>
             <option value="Critical">Critical</option>
             <option value="High">High</option>
             <option value="Medium">Medium</option>

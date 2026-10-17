@@ -1,5 +1,12 @@
 import { validateContract, assertContract } from '../common/validator.js';
-import { TICKET_STATUSES, TICKET_CATEGORIES, TICKET_PRIORITIES } from '../enums/index.js';
+import {
+  TICKET_STATUSES,
+  TICKET_CATEGORIES,
+  TICKET_PRIORITIES,
+  EDITABLE_TICKET_CATEGORIES,
+  EDITABLE_TICKET_PRIORITIES,
+  AI_STATUSES
+} from '../enums/index.js';
 
 export const CreateTicketRequestContract = {
   bookId: {
@@ -67,6 +74,11 @@ export const TicketListItemContract = {
     type: 'string',
     required: true,
     allowedValues: Object.values(TICKET_STATUSES)
+  },
+  aiStatus: {
+    type: 'string',
+    required: false,
+    allowedValues: Object.values(AI_STATUSES)
   },
   assignedToName: {
     type: 'string',
@@ -169,6 +181,15 @@ export const TicketDetailResponseContract = {
     required: true,
     allowedValues: Object.values(TICKET_STATUSES)
   },
+  aiStatus: {
+    type: 'string',
+    required: false,
+    allowedValues: Object.values(AI_STATUSES)
+  },
+  aiDraftResponse: {
+    type: 'string',
+    required: false
+  },
   assignedToId: {
     type: 'string',
     required: false
@@ -251,12 +272,12 @@ export const UpdateTicketMetadataRequestContract = {
   category: {
     type: 'string',
     required: false,
-    allowedValues: Object.values(TICKET_CATEGORIES)
+    allowedValues: EDITABLE_TICKET_CATEGORIES
   },
   priority: {
     type: 'string',
     required: false,
-    allowedValues: Object.values(TICKET_PRIORITIES)
+    allowedValues: EDITABLE_TICKET_PRIORITIES
   },
   assignedToId: {
     type: 'string',

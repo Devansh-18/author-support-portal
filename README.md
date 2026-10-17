@@ -50,6 +50,10 @@ ADMIN_NAME=System Administrator
 SEED_DEFAULT_PASSWORD=Password@123
 JWT_SECRET=bookleaf_author_portal_secure_jwt_secret_key_2026
 JWT_EXPIRES_IN=7d
+AI_PROVIDER=gemini
+GEMINI_API_KEY=your_gemini_api_key_here
+GEMINI_MODEL=gemini-1.5-flash
+AI_MAX_RETRIES=3
 ```
 
 ### 3. Seed Database
@@ -153,6 +157,18 @@ author-support-portal/
 ### 4. Near-Real-Time Synchronization
 - Implemented with lightweight smart polling (`useTicketSync`) in `ticketService.js`.
 - Automatically polls active tickets every 3 seconds and pauses when the browser tab is hidden (`document.hidden`) or offline. Delivers immediate perceived responsiveness without complex WebSocket proxy setup.
+
+### 5. Decoupled Asynchronous AI Architecture
+- **Strategy / Adapter Pattern (`BaseAiProvider`, `GeminiAiProvider`, `MockAiProvider`, `AiProviderFactory`)**:
+  - Core ticket services never depend directly on Google Gemini or third-party SDKs. All AI interactions pass through the `BaseAiProvider` interface.
+- **Zero User Wait Time (< 50ms)**:
+  - When an author creates a ticket, the ticket is written to MongoDB with initial state and `aiStatus: "pending"`, and HTTP `201 Created` is returned **instantly**.
+  - Background orchestrator (`ai.orchestrator.js`) dispatches the AI task asynchronously without blocking the user.
+- **'N/A' Baseline for AI-Generated Attributes**:
+  - Tickets start with `category: "N/A"` and `priority: "N/A"`. If AI is processing or fails, attributes remain `"N/A"`.
+  - Admins are strictly prohibited by contracts and service validation from updating any ticket to `"N/A"`.
+- **Resilient Retry Engine**:
+  - Distinguishes permanent errors (400, 401, 403, 404, safety blocks) which bail out immediately vs. transient errors (429 rate limit, 5xx, network timeouts) which retry up to 3 times with exponential backoff and randomized jitter.
 
 ---
 

@@ -55,10 +55,18 @@ export function TicketQueueTable({ tickets, onSelectTicket, selectedTicketId }) 
                   </div>
                 </td>
                 <td>
-                  <span style={{ fontSize: '12px', color: '#475569' }}>{t.category}</span>
+                  {t.category === 'N/A' ? (
+                    <span className="badge badge-na">N/A</span>
+                  ) : (
+                    <span style={{ fontSize: '12px', color: '#475569' }}>{t.category}</span>
+                  )}
                 </td>
                 <td>
-                  <PriorityBadge priority={t.priority} />
+                  {t.aiStatus === 'processing' ? (
+                    <span className="badge badge-ai-processing" style={{ fontSize: '11px' }}>Analyzing...</span>
+                  ) : (
+                    <PriorityBadge priority={t.priority} />
+                  )}
                 </td>
                 <td>
                   <StatusBadge status={t.status} />

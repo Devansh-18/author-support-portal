@@ -18,9 +18,13 @@ export function PriorityBadge({ priority }) {
       dotColor = '#16A34A';
       break;
     case 'Low':
-    default:
       badgeClass = 'badge-low';
       dotColor = '#64748B';
+      break;
+    case 'N/A':
+    default:
+      badgeClass = 'badge-na';
+      dotColor = '#94A3B8';
       break;
   }
 

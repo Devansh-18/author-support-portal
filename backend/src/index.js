@@ -5,6 +5,7 @@ import { createApp } from './app.js';
 
 try {
   // Pre-runtime strict configuration validation (fails fast if missing)
+  // Re-validates configuration on server reload with gemini-3.5-flash-lite
   const config = validateEnv();
 
   // Configure logger level based on validated environment configuration

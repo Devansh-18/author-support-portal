@@ -317,6 +317,25 @@ input, textarea, select {
   border: 1px solid var(--priority-low-border);
 }
 
+.badge-na {
+  background: #F1F5F9;
+  color: #64748B;
+  border: 1px dashed #CBD5E1;
+}
+
+.badge-ai-processing {
+  background: #F3E8FF;
+  color: #7E22CE;
+  border: 1px solid #D8B4FE;
+  animation: badge-pulse 1.8s infinite ease-in-out;
+}
+
+@keyframes badge-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
+
 /* Modal Overlay */
 .modal-overlay {
   position: fixed;

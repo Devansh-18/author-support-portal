@@ -103,6 +103,9 @@ export function TicketTriagePane({ ticketId, onClose, onTicketUpdated }) {
               </span>
               {ticket && <PriorityBadge priority={ticket.priority} />}
               {ticket && <StatusBadge status={ticket.status} />}
+              {ticket && ticket.aiStatus === 'processing' && (
+                <span className="badge badge-ai-processing">AI Analyzing</span>
+              )}
             </div>
             <h2 style={{ fontSize: '20px', color: '#0F172A', fontWeight: '700' }}>
               {ticket?.subject}
@@ -174,6 +177,9 @@ export function TicketTriagePane({ ticketId, onClose, onTicketUpdated }) {
                     disabled={isUpdating}
                     style={{ padding: '4px 8px', fontSize: '13px' }}
                   >
+                    {ticket.category === 'N/A' && (
+                      <option value="N/A" disabled>Select to classify...</option>
+                    )}
                     <option value="Royalty & Payments">Royalty & Payments</option>
                     <option value="ISBN & Metadata Issues">ISBN & Metadata Issues</option>
                     <option value="Printing & Quality">Printing & Quality</option>
@@ -195,6 +201,9 @@ export function TicketTriagePane({ ticketId, onClose, onTicketUpdated }) {
                     disabled={isUpdating}
                     style={{ padding: '4px 8px', fontSize: '13px' }}
                   >
+                    {ticket.priority === 'N/A' && (
+                      <option value="N/A" disabled>Select to score...</option>
+                    )}
                     <option value="Critical">Critical</option>
                     <option value="High">High</option>
                     <option value="Medium">Medium</option>
@@ -292,7 +301,7 @@ export function TicketTriagePane({ ticketId, onClose, onTicketUpdated }) {
 
             {/* Admin Response Composer Form */}
             {ticket.status !== 'Closed' && (
-              <AdminReplyBox ticketId={ticket.id} onReplySent={fetchTicket} />
+              <AdminReplyBox ticket={ticket} ticketId={ticket.id} onReplySent={fetchTicket} />
             )}
           </div>
         )}

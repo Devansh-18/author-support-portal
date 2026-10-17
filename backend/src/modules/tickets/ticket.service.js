@@ -6,9 +6,13 @@ import {
   USER_ROLES,
   TICKET_STATUSES,
   TICKET_CATEGORIES,
-  TICKET_PRIORITIES
+  TICKET_PRIORITIES,
+  EDITABLE_TICKET_CATEGORIES,
+  EDITABLE_TICKET_PRIORITIES,
+  AI_STATUSES
 } from '../../constants/enums.js';
 import { NotFoundError, ForbiddenError, ValidationError } from '../../errors/index.js';
+import { analyzeTicketInBackground } from '../ai/ai.orchestrator.js';
 
 /**
  * Formats a Ticket document to TicketListItemContract.
@@ -29,6 +33,7 @@ export function formatTicketListItem(t) {
     category: t.category,
     priority: t.priority,
     status: t.status,
+    aiStatus: t.aiStatus || AI_STATUSES.PENDING,
     assignedToName: t.assignedTo?.name || null,
     createdAt: new Date(t.createdAt).toISOString(),
     updatedAt: new Date(t.updatedAt).toISOString()
@@ -76,10 +81,17 @@ export async function createTicket({
     book: linkedBookId,
     subject: body.subject.trim(),
     description: body.description.trim(),
-    category: TICKET_CATEGORIES.GENERAL_INQUIRY,
-    priority: TICKET_PRIORITIES.MEDIUM,
+    category: TICKET_CATEGORIES.NOT_APPLICABLE,
+    priority: TICKET_PRIORITIES.NOT_APPLICABLE,
     status: TICKET_STATUSES.OPEN,
+    aiDraftResponse: null,
+    aiStatus: AI_STATUSES.PENDING,
     attachments: Array.isArray(body.attachments) ? body.attachments : []
+  });
+
+  // Non-blocking asynchronous AI analysis trigger (user never waits!)
+  setImmediate(() => {
+    analyzeTicketInBackground({ ticketId: newTicket._id, ticketModel }).catch(() => {});
   });
 
   const populatedTicket = await ticketModel
@@ -129,7 +141,7 @@ export async function listTickets({ user, filters = {}, ticketModel = Ticket }) 
 
   const rawTickets = await ticketModel
     .find(query)
-    .select('ticketNumber author book subject category priority status assignedTo createdAt updatedAt')
+    .select('ticketNumber author book subject category priority status aiStatus assignedTo createdAt updatedAt')
     .populate('author', 'name email authorId')
     .populate('book', 'title bookId')
     .populate('assignedTo', 'name')
@@ -205,6 +217,8 @@ export async function getTicketDetail({
     category: ticket.category,
     priority: ticket.priority,
     status: ticket.status,
+    aiStatus: ticket.aiStatus || AI_STATUSES.PENDING,
+    aiDraftResponse: ticket.aiDraftResponse || null,
     assignedToId: ticket.assignedTo?._id ? ticket.assignedTo._id.toString() : null,
     assignedToName: ticket.assignedTo?.name || null,
     attachments: Array.isArray(ticket.attachments) ? ticket.attachments : [],
@@ -403,15 +417,25 @@ export async function updateTicketMetadata({
   const updateFields = { updatedAt: new Date() };
 
   if (metadata.category) {
-    if (!Object.values(TICKET_CATEGORIES).includes(metadata.category)) {
-      throw new ValidationError(`Invalid ticket category: ${metadata.category}`);
+    if (
+      metadata.category === TICKET_CATEGORIES.NOT_APPLICABLE ||
+      !EDITABLE_TICKET_CATEGORIES.includes(metadata.category)
+    ) {
+      throw new ValidationError(
+        `Admin cannot update ticket category to "${metadata.category}". Allowed: ${EDITABLE_TICKET_CATEGORIES.join(', ')}`
+      );
     }
     updateFields.category = metadata.category;
   }
 
   if (metadata.priority) {
-    if (!Object.values(TICKET_PRIORITIES).includes(metadata.priority)) {
-      throw new ValidationError(`Invalid ticket priority: ${metadata.priority}`);
+    if (
+      metadata.priority === TICKET_PRIORITIES.NOT_APPLICABLE ||
+      !EDITABLE_TICKET_PRIORITIES.includes(metadata.priority)
+    ) {
+      throw new ValidationError(
+        `Admin cannot update ticket priority to "${metadata.priority}". Allowed: ${EDITABLE_TICKET_PRIORITIES.join(', ')}`
+      );
     }
     updateFields.priority = metadata.priority;
   }

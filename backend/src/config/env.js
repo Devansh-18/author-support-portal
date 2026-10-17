@@ -51,6 +51,27 @@ export function validateEnv(source = process.env) {
     missing.push('JWT_EXPIRES_IN is required. No fallback permitted.');
   }
 
+  const rawAiProvider = source.AI_PROVIDER;
+  if (!rawAiProvider || rawAiProvider.trim() === '') {
+    missing.push('AI_PROVIDER is required (allowed: "gemini", "mock"). No fallback permitted.');
+  }
+
+  const rawAiMaxRetries = source.AI_MAX_RETRIES;
+  if (!rawAiMaxRetries || rawAiMaxRetries.trim() === '') {
+    missing.push('AI_MAX_RETRIES is required. No fallback permitted.');
+  }
+
+  const rawGeminiApiKey = source.GEMINI_API_KEY;
+  const rawGeminiModel = source.GEMINI_MODEL;
+  if (rawAiProvider && rawAiProvider.trim().toLowerCase() === 'gemini') {
+    if (!rawGeminiApiKey || rawGeminiApiKey.trim() === '') {
+      missing.push('GEMINI_API_KEY is required when AI_PROVIDER is "gemini". No fallback permitted.');
+    }
+    if (!rawGeminiModel || rawGeminiModel.trim() === '') {
+      missing.push('GEMINI_MODEL is required when AI_PROVIDER is "gemini". No fallback permitted.');
+    }
+  }
+
   if (missing.length > 0) {
     throw new ConfigurationError(`Environment Validation Failure:\n - ${missing.join('\n - ')}`);
   }
@@ -74,6 +95,18 @@ export function validateEnv(source = process.env) {
     );
   }
 
+  const trimmedAiProvider = rawAiProvider.trim().toLowerCase();
+  if (!['gemini', 'mock'].includes(trimmedAiProvider)) {
+    throw new ConfigurationError(`AI_PROVIDER must be one of: "gemini", "mock". Received: ${rawAiProvider}`);
+  }
+
+  const aiMaxRetries = Number(rawAiMaxRetries);
+  if (!Number.isInteger(aiMaxRetries) || aiMaxRetries < 0 || aiMaxRetries > 10) {
+    throw new ConfigurationError(
+      `AI_MAX_RETRIES must be an integer between 0 and 10. Received: ${rawAiMaxRetries}`
+    );
+  }
+
   return {
     port: portNumber,
     nodeEnv: rawNodeEnv.trim(),
@@ -81,6 +114,10 @@ export function validateEnv(source = process.env) {
     mongoUri: trimmedMongoUri,
     logLevel: trimmedLogLevel,
     jwtSecret: rawJwtSecret.trim(),
-    jwtExpiresIn: rawJwtExpiresIn.trim()
+    jwtExpiresIn: rawJwtExpiresIn.trim(),
+    aiProvider: trimmedAiProvider,
+    geminiApiKey: rawGeminiApiKey ? rawGeminiApiKey.trim() : null,
+    geminiModel: rawGeminiModel ? rawGeminiModel.trim() : null,
+    aiMaxRetries
   };
 }

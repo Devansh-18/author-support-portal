@@ -132,19 +132,35 @@ export function AuthorTicketList({ onSelectTicket, onOpenCreateModal }) {
                   <span style={{ fontSize: '12px', fontWeight: '700', fontFamily: 'var(--font-mono)', color: '#8C847A' }}>
                     {t.ticketNumber}
                   </span>
-                  <span
-                    style={{
-                      fontSize: '11px',
-                      fontWeight: '600',
-                      padding: '2px 8px',
-                      borderRadius: 'var(--radius-full)',
-                      background: '#F6F2EC',
-                      color: '#57534E'
-                    }}
-                  >
-                    {t.category}
-                  </span>
-                  <PriorityBadge priority={t.priority} />
+                  {t.category && t.category !== 'N/A' ? (
+                    <span
+                      style={{
+                        fontSize: '11px',
+                        fontWeight: '600',
+                        padding: '2px 8px',
+                        borderRadius: 'var(--radius-full)',
+                        background: '#F6F2EC',
+                        color: '#57534E'
+                      }}
+                    >
+                      {t.category}
+                    </span>
+                  ) : (
+                    <span
+                      style={{
+                        fontSize: '11px',
+                        fontWeight: '500',
+                        padding: '2px 8px',
+                        borderRadius: 'var(--radius-full)',
+                        background: '#F6F2EC',
+                        color: '#8C847A',
+                        fontStyle: 'italic'
+                      }}
+                    >
+                      Classifying...
+                    </span>
+                  )}
+                  {t.priority && t.priority !== 'N/A' && <PriorityBadge priority={t.priority} />}
                 </div>
                 <h3 style={{ fontSize: '17px', color: '#1C1917', marginBottom: '4px' }}>
                   {t.subject}

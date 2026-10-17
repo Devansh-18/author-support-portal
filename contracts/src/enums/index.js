@@ -49,6 +49,7 @@ export const TICKET_STATUSES = Object.freeze({
  * Support ticket inquiry categories.
  */
 export const TICKET_CATEGORIES = Object.freeze({
+  NOT_APPLICABLE: 'N/A',
   ROYALTY_AND_PAYMENTS: 'Royalty & Payments',
   ISBN_AND_METADATA: 'ISBN & Metadata Issues',
   PRINTING_AND_QUALITY: 'Printing & Quality',
@@ -58,11 +59,37 @@ export const TICKET_CATEGORIES = Object.freeze({
 });
 
 /**
+ * Operational ticket categories that an admin or AI can assign (strictly excludes 'N/A').
+ */
+export const EDITABLE_TICKET_CATEGORIES = Object.freeze(
+  Object.values(TICKET_CATEGORIES).filter((cat) => cat !== TICKET_CATEGORIES.NOT_APPLICABLE)
+);
+
+/**
  * Support ticket priority scores.
  */
 export const TICKET_PRIORITIES = Object.freeze({
+  NOT_APPLICABLE: 'N/A',
   CRITICAL: 'Critical',
   HIGH: 'High',
   MEDIUM: 'Medium',
   LOW: 'Low'
 });
+
+/**
+ * Operational ticket priorities that an admin or AI can assign (strictly excludes 'N/A').
+ */
+export const EDITABLE_TICKET_PRIORITIES = Object.freeze(
+  Object.values(TICKET_PRIORITIES).filter((pri) => pri !== TICKET_PRIORITIES.NOT_APPLICABLE)
+);
+
+/**
+ * Background AI analysis processing statuses.
+ */
+export const AI_STATUSES = Object.freeze({
+  PENDING: 'pending',
+  PROCESSING: 'processing',
+  COMPLETED: 'completed',
+  FAILED: 'failed'
+});
+
