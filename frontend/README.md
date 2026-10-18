@@ -1,16 +1,38 @@
-# React + Vite
+# BookLeaf Publishing — Frontend Client
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+The Single-Page Application (SPA) client for the **BookLeaf Author Support & Operations Portal**, built with **React 19** and **Vite**.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features
 
-## React Compiler
+- **Dual Persona Workspaces**:
+  - **Author Studio (`.theme-author`)**: Tactile literary manuscript paper aesthetic with warm parchment tones, editorial serif typography (*Playfair Display* / *Lora*), book catalog volume cards with spine accents, and a comprehensive royalty ledger statement.
+  - **Operations Triage Desk (`.theme-admin`)**: High-density, airy triage dashboard with clean slate styling, real-time SLA metrics, streamlined ticket queue tables, and deep ticket triage inspection drawers.
+- **Bi-directional URL State Sync**: Search filters, active tabs, and inspected ticket IDs synchronize with URL parameters via `useUrlState`.
+- **Smart Near-Real-Time Synchronization**: Periodic background ticket syncing via `useTicketSync` with automatic tab visibility throttling.
+- **Instant Evaluator 1-Click Login**: Test account switcher enabling one-click evaluation without typing credentials.
+- **Strict Shared Contracts**: API communication conforms to `@author-support/contracts`.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the Oxlint configuration
+## Local Development
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+From this directory:
+
+```bash
+# Start Vite development server (http://localhost:5173)
+npm run dev
+
+# Build production bundle
+npm run build
+
+# Preview production build locally
+npm run preview
+```
+
+Or from the monorepo root:
+
+```bash
+npm run dev:frontend
+```
