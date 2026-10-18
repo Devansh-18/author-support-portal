@@ -2,6 +2,7 @@ import { BaseAiProvider } from './baseAiProvider.js';
 import { buildTicketAnalysisPrompt, buildTicketAnalysisSchema } from '../templates/promptTemplates.js';
 import { BOOKLEAF_SYSTEM_INSTRUCTION } from '../templates/knowledgeBase.js';
 import { EDITABLE_TICKET_CATEGORIES, EDITABLE_TICKET_PRIORITIES } from '@author-support/contracts';
+import { logger } from '../../../utils/logger.js';
 
 /**
  * Custom error wrapper for AI provider operations.
@@ -75,10 +76,11 @@ export class GeminiAiProvider extends BaseAiProvider {
    * @param {object} params.ticket
    * @param {object|null} [params.book]
    * @param {object} params.author
+   * @param {Array<object>} [params.exemplars]
    * @returns {Promise<{ category: string, priority: string, draftResponse: string }>}
    */
-  async analyzeTicket({ ticket, book = null, author }) {
-    const prompt = buildTicketAnalysisPrompt({ ticket, book, author });
+  async analyzeTicket({ ticket, book = null, author, exemplars = [] }) {
+    const prompt = buildTicketAnalysisPrompt({ ticket, book, author, exemplars });
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(this.model)}:generateContent?key=${encodeURIComponent(this.apiKey)}`;
 
     const controller = new AbortController();
@@ -107,7 +109,7 @@ export class GeminiAiProvider extends BaseAiProvider {
           ],
           generationConfig: {
             temperature: 0.2,
-            maxOutputTokens: 800,
+            maxOutputTokens: 250,
             responseMimeType: 'application/json',
             responseSchema: buildTicketAnalysisSchema(),
             thinkingConfig: {
@@ -147,6 +149,16 @@ export class GeminiAiProvider extends BaseAiProvider {
     }
 
     const data = await response.json();
+
+    if (data.usageMetadata) {
+      logger.info('AI ticket analysis token telemetry', {
+        ticketNumber: ticket.ticketNumber,
+        promptTokens: data.usageMetadata.promptTokenCount,
+        outputTokens: data.usageMetadata.candidatesTokenCount,
+        totalTokens: data.usageMetadata.totalTokenCount,
+        cachedTokens: data.usageMetadata.cachedContentTokenCount || 0
+      });
+    }
 
     const candidate = data.candidates && data.candidates[0];
     if (!candidate) {

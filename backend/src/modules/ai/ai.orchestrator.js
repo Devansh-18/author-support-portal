@@ -1,5 +1,6 @@
 import { logger } from '../../utils/logger.js';
 import { getAiProvider } from './providers/aiProviderFactory.js';
+import { resolveContextRoute } from './templates/promptTemplates.js';
 import { Ticket } from '../tickets/ticket.model.js';
 import '../users/user.model.js';
 import '../books/book.model.js';
@@ -27,10 +28,13 @@ export async function analyzeTicketInBackground({
 }) {
   let ticketDoc;
   try {
-    ticketDoc = await ticketModel
-      .findById(ticketId)
-      .populate('author', 'name email authorId')
-      .populate('book', 'title isbn status mrp totalCopiesSold royaltyPending');
+    let query = ticketModel.findById(ticketId);
+    if (typeof query.select === 'function') {
+      query = query.select('ticketNumber subject description author book');
+    }
+    ticketDoc = await query
+      .populate('author', 'name')
+      .populate('book', 'title isbn status mrp royaltyPending');
 
     if (!ticketDoc) {
       logger.warn('AI analysis skipped: Ticket not found', { ticketId });
@@ -46,6 +50,17 @@ export async function analyzeTicketInBackground({
     return false;
   }
 
+  // Resolve 3-Tier context route and log route selection
+  const { route, exemplars } = resolveContextRoute({
+    subject: ticketDoc.subject,
+    description: ticketDoc.description
+  });
+
+  logger.info('AI knowledge routing', {
+    ticketNumber: ticketDoc.ticketNumber,
+    route
+  });
+
   const provider = aiProvider || getAiProvider();
   let attempts = 0;
   let analysisResult = null;
@@ -60,12 +75,17 @@ export async function analyzeTicketInBackground({
           subject: ticketDoc.subject,
           description: ticketDoc.description
         },
-        book: ticketDoc.book || null,
+        book: ticketDoc.book ? {
+          title: ticketDoc.book.title,
+          isbn: ticketDoc.book.isbn,
+          status: ticketDoc.book.status,
+          mrp: ticketDoc.book.mrp,
+          royaltyPending: ticketDoc.book.royaltyPending
+        } : null,
         author: {
-          name: ticketDoc.author ? ticketDoc.author.name : 'Author',
-          email: ticketDoc.author ? ticketDoc.author.email : '',
-          authorId: ticketDoc.author ? ticketDoc.author.authorId : ''
-        }
+          name: ticketDoc.author ? ticketDoc.author.name : 'Author'
+        },
+        exemplars
       });
 
       // Succeeded! Break loop
