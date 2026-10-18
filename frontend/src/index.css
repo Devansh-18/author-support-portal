@@ -113,13 +113,13 @@ input, textarea, select {
   background: var(--surface-bg);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
-  box-shadow: 0 2px 8px rgba(35, 31, 28, 0.04), 0 1px 2px rgba(35, 31, 28, 0.02);
+  box-shadow: 0 1px 3px rgba(35, 31, 28, 0.04);
   transition: var(--transition);
 }
 
 .theme-author .manuscript-card:hover {
   border-color: var(--border-dark);
-  box-shadow: 0 6px 16px rgba(35, 31, 28, 0.06);
+  box-shadow: 0 4px 12px rgba(35, 31, 28, 0.06);
 }
 
 .theme-author .btn-primary {
@@ -127,6 +127,7 @@ input, textarea, select {
   color: #FFFFFF;
   padding: 10px 18px;
   border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
   font-weight: 500;
   font-size: 14px;
   transition: var(--transition);
@@ -146,6 +147,7 @@ input, textarea, select {
   border: 1px solid var(--border-color);
   padding: 9px 16px;
   border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
   font-weight: 500;
   font-size: 14px;
   transition: var(--transition);
@@ -180,7 +182,7 @@ input, textarea, select {
   background: var(--surface-bg);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .theme-admin .btn-primary {
@@ -188,6 +190,7 @@ input, textarea, select {
   color: #FFFFFF;
   padding: 9px 16px;
   border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
   font-weight: 500;
   font-size: 14px;
   transition: var(--transition);
@@ -240,7 +243,7 @@ input, textarea, select {
 .brand-logo {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   font-size: 18px;
   font-weight: 700;
   text-decoration: none;
@@ -248,6 +251,7 @@ input, textarea, select {
 }
 
 .brand-badge {
+  font-family: var(--font-sans);
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -263,6 +267,7 @@ input, textarea, select {
   gap: 5px;
   padding: 4px 10px;
   border-radius: var(--radius-full);
+  font-family: var(--font-sans);
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.02em;
@@ -335,7 +340,6 @@ input, textarea, select {
   50% { opacity: 0.55; }
 }
 
-
 /* Modal Overlay */
 .modal-overlay {
   position: fixed;
@@ -368,6 +372,7 @@ input, textarea, select {
 
 .form-label {
   display: block;
+  font-family: var(--font-sans);
   font-size: 13px;
   font-weight: 600;
   margin-bottom: 6px;
@@ -381,6 +386,7 @@ input, textarea, select {
   border-radius: var(--radius-sm);
   background: #FFFFFF;
   color: inherit;
+  font-family: var(--font-sans);
   transition: var(--transition);
 }
 
@@ -395,14 +401,15 @@ input, textarea, select {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  font-size: 14px;
+  font-family: var(--font-sans);
+  font-size: 13px;
 }
 
 .data-table th {
   background: var(--surface-subtle);
-  padding: 12px 16px;
+  padding: 10px 14px;
   font-weight: 600;
-  font-size: 12px;
+  font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--slate-secondary, #64748B);
@@ -411,7 +418,7 @@ input, textarea, select {
 }
 
 .data-table td {
-  padding: 14px 16px;
+  padding: 10px 14px;
   border-bottom: 1px solid var(--border-color);
   vertical-align: middle;
 }
@@ -465,4 +472,44 @@ input, textarea, select {
 
 .animate-fade-in {
   animation: fadeIn 0.25s ease forwards;
+}
+
+/* ------------------------------------------------------------- */
+/* Responsive Media Queries (Mobile & Tablet) */
+/* ------------------------------------------------------------- */
+@media (max-width: 768px) {
+  .nav-desktop-tabs,
+  .nav-desktop-user {
+    display: none !important;
+  }
+
+  .nav-mobile-toggle {
+    display: inline-flex !important;
+  }
+
+  .navbar-container {
+    padding: 12px 16px;
+  }
+
+  .main-content {
+    padding: 20px 14px;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  .modal-content {
+    padding: 20px 16px;
+    margin: 8px;
+    width: 100%;
+    max-height: 94vh;
+  }
+
+  .chat-bubble {
+    max-width: 92%;
+    padding: 12px 14px;
+  }
 }

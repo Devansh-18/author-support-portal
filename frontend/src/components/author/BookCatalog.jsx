@@ -53,19 +53,37 @@ export function BookCatalog({ onRaiseTicket }) {
         }}
       >
         <div>
-          <h2 style={{ fontSize: '24px', color: '#1C1917' }}>My Published Catalog</h2>
-          <p style={{ fontSize: '14px', color: '#57534E', marginTop: '2px' }}>
+          <h2
+            style={{
+              fontFamily: 'var(--font-serif)',
+              fontSize: '24px',
+              fontWeight: '600',
+              color: '#1C1917'
+            }}
+          >
+            My Published Catalog
+          </h2>
+          <p style={{ fontFamily: 'var(--font-sans)', fontSize: '13px', color: '#57534E', marginTop: '2px' }}>
             Showing {books.length} {books.length === 1 ? 'title' : 'titles'} under your author imprint
           </p>
         </div>
 
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '12px',
+            alignItems: 'center',
+            width: '100%',
+            maxWidth: '460px'
+          }}
+        >
           {/* Enum-based Status Filter */}
           <select
             className="form-select"
             value={urlParams.bookStatus}
             onChange={(e) => setUrlParams({ bookStatus: e.target.value })}
-            style={{ minWidth: '180px' }}
+            style={{ flex: '1 1 180px', minWidth: '150px' }}
           >
             <option value="">All Publication Statuses</option>
             <option value="Published & Live">Published & Live</option>
@@ -78,7 +96,7 @@ export function BookCatalog({ onRaiseTicket }) {
             className="form-select"
             value={urlParams.sortBy}
             onChange={(e) => setUrlParams({ sortBy: e.target.value })}
-            style={{ minWidth: '180px' }}
+            style={{ flex: '1 1 180px', minWidth: '150px' }}
           >
             <option value="publicationDate">Sort by Release Date</option>
             <option value="totalRoyaltyEarned">Sort by Royalty Earned</option>
@@ -114,7 +132,7 @@ export function BookCatalog({ onRaiseTicket }) {
         <div
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
             gap: '24px'
           }}
         >

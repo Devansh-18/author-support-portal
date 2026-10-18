@@ -53,19 +53,37 @@ export function AuthorTicketList({ onSelectTicket, onOpenCreateModal }) {
         }}
       >
         <div>
-          <h2 style={{ fontSize: '24px', color: '#1C1917' }}>Author Support Tickets</h2>
-          <p style={{ fontSize: '14px', color: '#57534E', marginTop: '2px' }}>
-            Direct communication desk with BookLeaf Publishing editorial and production staff
+          <h2
+            style={{
+              fontFamily: 'var(--font-serif)',
+              fontSize: '24px',
+              fontWeight: '600',
+              color: '#1C1917'
+            }}
+          >
+            Author Support Tickets
+          </h2>
+          <p style={{ fontFamily: 'var(--font-sans)', fontSize: '13px', color: '#57534E', marginTop: '2px' }}>
+            Direct communication desk with BookLeaf Publishing staff
           </p>
         </div>
 
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '12px',
+            alignItems: 'center',
+            width: '100%',
+            maxWidth: '420px'
+          }}
+        >
           {/* Enum-based Status Filter */}
           <select
             className="form-select"
             value={urlParams.ticketStatus}
             onChange={(e) => setUrlParams({ ticketStatus: e.target.value })}
-            style={{ minWidth: '160px' }}
+            style={{ flex: '1 1 160px', minWidth: '140px' }}
           >
             <option value="">All Ticket Statuses</option>
             <option value="Open">Open</option>
@@ -78,8 +96,9 @@ export function AuthorTicketList({ onSelectTicket, onOpenCreateModal }) {
             type="button"
             onClick={onOpenCreateModal}
             className="btn-primary"
+            style={{ flex: '0 0 auto', whiteSpace: 'nowrap' }}
           >
-            + Raise Support Ticket
+            + Raise Ticket
           </button>
         </div>
       </div>
@@ -98,7 +117,7 @@ export function AuthorTicketList({ onSelectTicket, onOpenCreateModal }) {
 
       {!isLoading && !error && tickets.length === 0 && (
         <div className="manuscript-card" style={{ padding: '48px 24px', textAlign: 'center', color: '#8C847A' }}>
-          <p style={{ fontSize: '16px', color: '#1C1917', marginBottom: '8px' }}>
+          <p style={{ fontSize: '16px', color: '#1C1917', marginBottom: '8px', fontFamily: 'var(--font-serif)', fontWeight: '600' }}>
             No support queries found.
           </p>
           <p style={{ fontSize: '14px', color: '#57534E', marginBottom: '16px' }}>
@@ -118,17 +137,17 @@ export function AuthorTicketList({ onSelectTicket, onOpenCreateModal }) {
               onClick={() => onSelectTicket(t.id)}
               className="manuscript-card"
               style={{
-                padding: '18px 24px',
+                padding: '18px 22px',
                 cursor: 'pointer',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 flexWrap: 'wrap',
-                gap: '16px'
+                gap: '14px'
               }}
             >
-              <div style={{ flex: '1', minWidth: '280px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+              <div style={{ flex: '1 1 260px', minWidth: '0' }}>
+                <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '6px' }}>
                   <span style={{ fontSize: '12px', fontWeight: '700', fontFamily: 'var(--font-mono)', color: '#8C847A' }}>
                     {t.ticketNumber}
                   </span>
@@ -140,7 +159,8 @@ export function AuthorTicketList({ onSelectTicket, onOpenCreateModal }) {
                         padding: '2px 8px',
                         borderRadius: 'var(--radius-full)',
                         background: '#F6F2EC',
-                        color: '#57534E'
+                        color: '#57534E',
+                        border: '1px solid #E6DFD5'
                       }}
                     >
                       {t.category}
@@ -154,7 +174,8 @@ export function AuthorTicketList({ onSelectTicket, onOpenCreateModal }) {
                         borderRadius: 'var(--radius-full)',
                         background: '#F6F2EC',
                         color: '#8C847A',
-                        fontStyle: 'italic'
+                        fontStyle: 'italic',
+                        border: '1px solid #E6DFD5'
                       }}
                     >
                       Classifying...
@@ -162,18 +183,26 @@ export function AuthorTicketList({ onSelectTicket, onOpenCreateModal }) {
                   )}
                   {t.priority && t.priority !== 'N/A' && <PriorityBadge priority={t.priority} />}
                 </div>
-                <h3 style={{ fontSize: '17px', color: '#1C1917', marginBottom: '4px' }}>
+                <h3
+                  style={{
+                    fontSize: '17px',
+                    color: '#1C1917',
+                    marginBottom: '4px',
+                    fontFamily: 'var(--font-serif)',
+                    fontWeight: '600'
+                  }}
+                >
                   {t.subject}
                 </h3>
-                <div style={{ fontSize: '13px', color: '#57534E' }}>
+                <div style={{ fontSize: '13px', color: '#57534E', wordBreak: 'break-word' }}>
                   {t.bookTitle ? `Title: ${t.bookTitle}` : 'General / Account Level'} • Updated {new Date(t.updatedAt).toLocaleDateString()}
                 </div>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexShrink: 0 }}>
                 <StatusBadge status={t.status} />
-                <span style={{ color: '#1B4931', fontWeight: '600', fontSize: '14px' }}>
-                  Open Dialogue →
+                <span style={{ color: '#1B4931', fontWeight: '600', fontSize: '13px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                  Dialogue →
                 </span>
               </div>
             </div>

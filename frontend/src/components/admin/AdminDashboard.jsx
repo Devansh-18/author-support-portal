@@ -66,12 +66,12 @@ export function AdminDashboard() {
       <Navbar />
 
       <main className="main-content">
-        <div style={{ marginBottom: '24px' }}>
-          <h1 style={{ fontSize: '28px', color: '#0F172A', fontWeight: '800', letterSpacing: '-0.02em', marginBottom: '4px' }}>
+        <div style={{ marginBottom: '20px' }}>
+          <h1 style={{ fontSize: '26px', color: '#0F172A', fontWeight: '700', letterSpacing: '-0.02em', marginBottom: '4px' }}>
             Operations Triage & Inquiry Queue
           </h1>
-          <p style={{ fontSize: '14px', color: '#64748B' }}>
-            BookLeaf publishing operations support portal • Monitoring SLA urgency and author inquiries
+          <p style={{ fontSize: '13px', color: '#64748B' }}>
+            Real-time SLA monitoring and author communication queue
           </p>
         </div>
 

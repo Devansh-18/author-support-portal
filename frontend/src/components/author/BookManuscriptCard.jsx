@@ -14,6 +14,9 @@ export function BookManuscriptCard({ book, onRaiseTicketForBook }) {
       className="manuscript-card"
       style={{
         padding: '24px',
+        background: '#FFFFFF',
+        border: '1px solid #E6DFD5',
+        borderRadius: 'var(--radius-md)',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
@@ -28,7 +31,7 @@ export function BookManuscriptCard({ book, onRaiseTicketForBook }) {
           top: 0,
           left: 0,
           bottom: 0,
-          width: '5px',
+          width: '4px',
           background: book.status === 'Published & Live' ? '#1B4931' : '#B47820'
         }}
       />
@@ -38,6 +41,7 @@ export function BookManuscriptCard({ book, onRaiseTicketForBook }) {
           <div>
             <span
               style={{
+                fontFamily: 'var(--font-sans)',
                 fontSize: '11px',
                 fontWeight: '600',
                 textTransform: 'uppercase',
@@ -54,6 +58,7 @@ export function BookManuscriptCard({ book, onRaiseTicketForBook }) {
                 fontSize: '20px',
                 color: '#1C1917',
                 fontFamily: 'var(--font-serif)',
+                fontWeight: '600',
                 lineHeight: '1.3',
                 marginBottom: '8px'
               }}
@@ -84,11 +89,11 @@ export function BookManuscriptCard({ book, onRaiseTicketForBook }) {
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
             <span>Publication Date:</span>
-            <span style={{ fontWeight: '500', color: '#1C1917' }}>{formattedDate}</span>
+            <span style={{ fontFamily: 'var(--font-sans)', fontWeight: '500', color: '#1C1917' }}>{formattedDate}</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <span>Print Partner:</span>
-            <span style={{ fontWeight: '500', color: '#1C1917' }}>{book.printPartner || 'In-House'}</span>
+            <span style={{ fontFamily: 'var(--font-sans)', fontWeight: '500', color: '#1C1917' }}>{book.printPartner || 'In-House'}</span>
           </div>
         </div>
 
@@ -97,26 +102,32 @@ export function BookManuscriptCard({ book, onRaiseTicketForBook }) {
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: '10px',
+            gap: '8px',
             margin: '14px 0',
             textAlign: 'center'
           }}
         >
           <div style={{ background: '#FFFFFF', border: '1px solid #E6DFD5', padding: '8px', borderRadius: 'var(--radius-sm)' }}>
-            <div style={{ fontSize: '11px', color: '#8C847A', textTransform: 'uppercase' }}>MRP / Royalty</div>
-            <div style={{ fontSize: '14px', fontWeight: '700', color: '#1C1917', marginTop: '2px' }}>
+            <div style={{ fontFamily: 'var(--font-sans)', fontSize: '10px', color: '#8C847A', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              MRP / Royalty
+            </div>
+            <div style={{ fontFamily: 'var(--font-sans)', fontVariantNumeric: 'tabular-nums', fontSize: '13px', fontWeight: '700', color: '#1C1917', marginTop: '3px' }}>
               ₹{book.mrp || '—'} / ₹{book.authorRoyaltyPerCopy || '—'}
             </div>
           </div>
           <div style={{ background: '#FFFFFF', border: '1px solid #E6DFD5', padding: '8px', borderRadius: 'var(--radius-sm)' }}>
-            <div style={{ fontSize: '11px', color: '#8C847A', textTransform: 'uppercase' }}>Copies Sold</div>
-            <div style={{ fontSize: '14px', fontWeight: '700', color: '#1C1917', marginTop: '2px' }}>
+            <div style={{ fontFamily: 'var(--font-sans)', fontSize: '10px', color: '#8C847A', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              Copies Sold
+            </div>
+            <div style={{ fontFamily: 'var(--font-sans)', fontVariantNumeric: 'tabular-nums', fontSize: '13px', fontWeight: '700', color: '#1C1917', marginTop: '3px' }}>
               {book.totalCopiesSold.toLocaleString('en-IN')}
             </div>
           </div>
           <div style={{ background: '#FFFFFF', border: '1px solid #E6DFD5', padding: '8px', borderRadius: 'var(--radius-sm)' }}>
-            <div style={{ fontSize: '11px', color: '#8C847A', textTransform: 'uppercase' }}>Pending Payout</div>
-            <div style={{ fontSize: '14px', fontWeight: '700', color: book.royaltyPending > 0 ? '#B45309' : '#047857', marginTop: '2px' }}>
+            <div style={{ fontFamily: 'var(--font-sans)', fontSize: '10px', color: '#8C847A', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              Pending
+            </div>
+            <div style={{ fontFamily: 'var(--font-sans)', fontVariantNumeric: 'tabular-nums', fontSize: '13px', fontWeight: '700', color: book.royaltyPending > 0 ? '#B45309' : '#047857', marginTop: '3px' }}>
               ₹{book.royaltyPending.toLocaleString('en-IN')}
             </div>
           </div>
@@ -125,7 +136,7 @@ export function BookManuscriptCard({ book, onRaiseTicketForBook }) {
         {/* Historical Payout Dates */}
         {Array.isArray(book.royaltyPayoutDates) && book.royaltyPayoutDates.length > 0 && (
           <div style={{ margin: '12px 0', fontSize: '12px', color: '#57534E' }}>
-            <span style={{ fontWeight: '600', color: '#1C1917' }}>Disbursed Payouts: </span>
+            <span style={{ fontFamily: 'var(--font-sans)', fontWeight: '600', color: '#1C1917' }}>Disbursed: </span>
             {book.royaltyPayoutDates.map((d) => (
               <span
                 key={d}
@@ -137,7 +148,9 @@ export function BookManuscriptCard({ book, onRaiseTicketForBook }) {
                   padding: '2px 6px',
                   borderRadius: '4px',
                   marginRight: '6px',
-                  marginTop: '4px'
+                  marginTop: '4px',
+                  fontFamily: 'var(--font-sans)',
+                  fontSize: '11px'
                 }}
               >
                 {new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
@@ -153,6 +166,7 @@ export function BookManuscriptCard({ book, onRaiseTicketForBook }) {
               <span
                 key={ch}
                 style={{
+                  fontFamily: 'var(--font-sans)',
                   fontSize: '11px',
                   padding: '2px 8px',
                   borderRadius: 'var(--radius-sm)',
