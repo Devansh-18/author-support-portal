@@ -13,6 +13,7 @@ import {
 } from '../../constants/enums.js';
 import { NotFoundError, ForbiddenError, ValidationError } from '../../errors/index.js';
 import { analyzeTicketInBackground } from '../ai/ai.orchestrator.js';
+import { logger } from '../../utils/logger.js';
 
 /**
  * Formats a Ticket document to TicketListItemContract.
@@ -75,6 +76,12 @@ export async function createTicket({
   const randomSuffix = Math.floor(10000 + Math.random() * 90000);
   const ticketNumber = `TKT-${randomSuffix}`;
 
+  logger.info('[TicketService] Persisting new ticket record to database', {
+    ticketNumber,
+    authorId: user._id.toString(),
+    linkedBookId: linkedBookId ? linkedBookId.toString() : null
+  });
+
   const newTicket = await ticketModel.create({
     ticketNumber,
     author: user._id,
@@ -89,9 +96,25 @@ export async function createTicket({
     attachments: Array.isArray(body.attachments) ? body.attachments : []
   });
 
+  logger.info('[TicketService] Ticket created in DB; dispatching asynchronous AI triage', {
+    ticketNumber: newTicket.ticketNumber,
+    ticketId: newTicket._id.toString(),
+    initialAiStatus: AI_STATUSES.PENDING
+  });
+
   // Non-blocking asynchronous AI analysis trigger (user never waits!)
   setImmediate(() => {
-    analyzeTicketInBackground({ ticketId: newTicket._id, ticketModel }).catch(() => {});
+    logger.info('[TicketService] Background execution starting for AI triage job', {
+      ticketNumber: newTicket.ticketNumber,
+      ticketId: newTicket._id.toString()
+    });
+
+    analyzeTicketInBackground({ ticketId: newTicket._id, ticketModel }).catch((err) => {
+      logger.error('[TicketService] Error during background AI triage dispatch', {
+        ticketNumber: newTicket.ticketNumber,
+        error: err.message
+      });
+    });
   });
 
   const populatedTicket = await ticketModel

@@ -1,5 +1,6 @@
 import { BaseAiProvider } from './baseAiProvider.js';
 import { TICKET_CATEGORIES, TICKET_PRIORITIES } from '@author-support/contracts';
+import { logger } from '../../../utils/logger.js';
 
 /**
  * Deterministic offline AI Provider for Hermetic Testing (Rule 4 of AGENTS.md).
@@ -55,6 +56,12 @@ export class MockAiProvider extends BaseAiProvider {
     }
 
     const draftResponse = `Hello ${author.name}, thank you for reaching out to BookLeaf Publishing regarding "${ticket.subject}". Our team is reviewing your query and will update you shortly.`;
+
+    logger.info('[Mock AI Provider] Performed offline ticket classification', {
+      ticketNumber: ticket.ticketNumber,
+      category,
+      priority
+    });
 
     return {
       category,

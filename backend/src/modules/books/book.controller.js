@@ -1,5 +1,6 @@
 import { listBooks, getBookById } from './book.service.js';
 import { assertBookListResponse, assertBookItem } from '@author-support/contracts';
+import { logger } from '../../utils/logger.js';
 
 /**
  * Controller handler to list books for authenticated user.
@@ -10,6 +11,12 @@ import { assertBookListResponse, assertBookItem } from '@author-support/contract
  */
 export async function listBooksHandler(req, res, next) {
   try {
+    logger.info('[API:GET /api/books] Fetching books catalog', {
+      role: req.user.role,
+      user: req.user.name,
+      statusFilter: req.query.status || 'All'
+    });
+
     const result = await listBooks({
       user: req.user,
       filters: req.query

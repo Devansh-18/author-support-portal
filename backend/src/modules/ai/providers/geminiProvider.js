@@ -89,6 +89,12 @@ export class GeminiAiProvider extends BaseAiProvider {
     // Gemini 3.5 & 3.1 Flash-Lite support 'minimal' for near-instant latency; 3.8 supports 'low'
     const thinkingLevel = (this.model.includes('3.5') || this.model.includes('3.1')) ? 'minimal' : 'low';
 
+    logger.info('[Gemini Provider] Dispatching HTTP request to Google Gemini API', {
+      model: this.model,
+      ticketNumber: ticket.ticketNumber,
+      timeoutMs: this.timeoutMs
+    });
+
     let response;
     try {
       response = await this.fetchClient(url, {
@@ -129,6 +135,12 @@ export class GeminiAiProvider extends BaseAiProvider {
     } finally {
       clearTimeout(timeoutId);
     }
+
+    logger.info('[Gemini Provider] Google Gemini HTTP response received', {
+      model: this.model,
+      ticketNumber: ticket.ticketNumber,
+      status: response.status
+    });
 
     // Handle HTTP error statuses
     if (!response.ok) {
@@ -219,6 +231,12 @@ export class GeminiAiProvider extends BaseAiProvider {
     const draftResponse = typeof parsed.draftResponse === 'string' && parsed.draftResponse.trim() !== ''
       ? parsed.draftResponse.trim()
       : `Hello ${author.name}, thank you for reaching out to BookLeaf Publishing. Our support team is reviewing your ticket and will follow up shortly.`;
+
+    logger.info('[Gemini Provider] Successfully parsed structured triage result from Gemini', {
+      ticketNumber: ticket.ticketNumber,
+      category,
+      priority
+    });
 
     return {
       category,

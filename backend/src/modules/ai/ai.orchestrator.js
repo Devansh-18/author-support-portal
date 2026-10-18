@@ -26,6 +26,8 @@ export async function analyzeTicketInBackground({
   initialDelayMs = 1000,
   maxDelayMs = 8000
 }) {
+  logger.info('[AI Orchestrator] Starting background ticket analysis job', { ticketId });
+
   let ticketDoc;
   try {
     let query = ticketModel.findById(ticketId);
@@ -37,7 +39,7 @@ export async function analyzeTicketInBackground({
       .populate('book', 'title isbn status mrp royaltyPending');
 
     if (!ticketDoc) {
-      logger.warn('AI analysis skipped: Ticket not found', { ticketId });
+      logger.warn('[AI Orchestrator] AI analysis skipped: Ticket document not found in DB', { ticketId });
       return false;
     }
 
@@ -45,8 +47,12 @@ export async function analyzeTicketInBackground({
     await ticketModel.findByIdAndUpdate(ticketDoc._id, {
       $set: { aiStatus: AI_STATUSES.PROCESSING }
     });
+
+    logger.info('[AI Orchestrator] Marked ticket aiStatus as processing in DB', {
+      ticketNumber: ticketDoc.ticketNumber
+    });
   } catch (dbError) {
-    logger.error('Failed to initialize AI analysis for ticket', { ticketId, error: dbError.message });
+    logger.error('[AI Orchestrator] Failed to initialize AI analysis for ticket', { ticketId, error: dbError.message });
     return false;
   }
 
@@ -56,9 +62,10 @@ export async function analyzeTicketInBackground({
     description: ticketDoc.description
   });
 
-  logger.info('AI knowledge routing', {
+  logger.info('[AI Orchestrator] Context routing resolved', {
     ticketNumber: ticketDoc.ticketNumber,
-    route
+    route,
+    exemplarCount: exemplars ? exemplars.length : 0
   });
 
   const provider = aiProvider || getAiProvider();
@@ -69,6 +76,13 @@ export async function analyzeTicketInBackground({
   while (attempts <= maxRetries) {
     try {
       attempts++;
+      logger.info('[AI Orchestrator] Calling AI Provider for ticket analysis', {
+        ticketNumber: ticketDoc.ticketNumber,
+        attempt: attempts,
+        maxRetries,
+        provider: provider.name || provider.constructor.name
+      });
+
       analysisResult = await provider.analyzeTicket({
         ticket: {
           ticketNumber: ticketDoc.ticketNumber,
@@ -88,13 +102,19 @@ export async function analyzeTicketInBackground({
         exemplars
       });
 
+      logger.info('[AI Orchestrator] AI analysis received successfully from provider', {
+        ticketNumber: ticketDoc.ticketNumber,
+        category: analysisResult.category,
+        priority: analysisResult.priority
+      });
+
       // Succeeded! Break loop
       break;
     } catch (err) {
       lastError = err;
       const isRetryable = typeof provider.isRetryable === 'function' ? provider.isRetryable(err) : false;
 
-      logger.warn('AI ticket analysis attempt encountered an error', {
+      logger.warn('[AI Orchestrator] AI ticket analysis attempt encountered an error', {
         ticketNumber: ticketDoc.ticketNumber,
         attempt: attempts,
         maxRetries,
@@ -112,6 +132,12 @@ export async function analyzeTicketInBackground({
       const jitter = Math.floor(Math.random() * 250);
       const delayMs = Math.min(exponentialDelay + jitter, maxDelayMs);
 
+      logger.info('[AI Orchestrator] Scheduling retry with backoff delay', {
+        ticketNumber: ticketDoc.ticketNumber,
+        nextAttempt: attempts + 1,
+        delayMs
+      });
+
       await new Promise((resolve) => setTimeout(resolve, delayMs));
     }
   }
@@ -119,6 +145,12 @@ export async function analyzeTicketInBackground({
   // Handle final result
   try {
     if (analysisResult) {
+      logger.info('[AI Orchestrator] Persisting AI triage result and draft response to ticket in DB', {
+        ticketNumber: ticketDoc.ticketNumber,
+        category: analysisResult.category,
+        priority: analysisResult.priority
+      });
+
       await ticketModel.findByIdAndUpdate(ticketDoc._id, {
         $set: {
           category: analysisResult.category,
@@ -128,21 +160,26 @@ export async function analyzeTicketInBackground({
         }
       });
 
-      logger.info('AI ticket analysis completed successfully', {
+      logger.info('[AI Orchestrator] AI ticket analysis workflow completed successfully', {
         ticketNumber: ticketDoc.ticketNumber,
         category: analysisResult.category,
-        priority: analysisResult.priority
+        priority: analysisResult.priority,
+        aiStatus: AI_STATUSES.COMPLETED
       });
       return true;
     } else {
       // Mark as failed, keep category and priority as 'N/A'
+      logger.warn('[AI Orchestrator] Marking ticket aiStatus as FAILED in DB (safe N/A baseline retained)', {
+        ticketNumber: ticketDoc.ticketNumber
+      });
+
       await ticketModel.findByIdAndUpdate(ticketDoc._id, {
         $set: {
           aiStatus: AI_STATUSES.FAILED
         }
       });
 
-      logger.error('AI ticket analysis permanently failed', {
+      logger.error('[AI Orchestrator] AI ticket analysis permanently failed', {
         ticketNumber: ticketDoc.ticketNumber,
         totalAttempts: attempts,
         error: lastError ? lastError.message : 'Unknown failure'
@@ -150,7 +187,7 @@ export async function analyzeTicketInBackground({
       return false;
     }
   } catch (updateError) {
-    logger.error('Failed to persist AI analysis status to ticket', {
+    logger.error('[AI Orchestrator] Failed to persist AI analysis status to ticket in DB', {
       ticketNumber: ticketDoc.ticketNumber,
       error: updateError.message
     });
